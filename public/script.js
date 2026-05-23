@@ -1,6 +1,6 @@
 const chatBox = document.getElementById("chat-box");
-const input = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
+const input = document.getElementById("message");
+const typing = document.getElementById("typing");
 
 function addMessage(message, sender) {
 
@@ -9,9 +9,9 @@ function addMessage(message, sender) {
   msgDiv.classList.add("message");
 
   if (sender === "user") {
-    msgDiv.classList.add("user-message");
+    msgDiv.classList.add("user");
   } else {
-    msgDiv.classList.add("bot-message");
+    msgDiv.classList.add("ai");
   }
 
   msgDiv.innerText = message;
@@ -19,8 +19,6 @@ function addMessage(message, sender) {
   chatBox.appendChild(msgDiv);
 
   chatBox.scrollTop = chatBox.scrollHeight;
-
-  return msgDiv;
 }
 
 async function sendMessage() {
@@ -33,9 +31,7 @@ async function sendMessage() {
 
   input.value = "";
 
-  // Loading message
-  const loadingMsg =
-    addMessage("VOH AI is thinking...", "bot");
+  typing.style.display = "block";
 
   try {
 
@@ -48,35 +44,23 @@ async function sendMessage() {
       },
 
       body: JSON.stringify({
-        message
+        message: message
       })
 
     });
 
     const data = await response.json();
 
-    // Replace loading text
-    loadingMsg.innerText = data.reply;
+    typing.style.display = "none";
 
-  }
+    addMessage(data.reply, "ai");
 
-  catch (error) {
+  } catch (error) {
 
-    loadingMsg.innerText =
-      "Error connecting to VOH AI 🚀";
+    typing.style.display = "none";
+
+    addMessage("Error getting response.", "ai");
 
   }
 
 }
-
-sendBtn.addEventListener("click", sendMessage);
-
-// Press Enter to send
-input.addEventListener("keypress", function(e) {
-
-  if (e.key === "Enter") {
-    sendMessage();
-  }
-
-});
-
