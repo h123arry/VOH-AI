@@ -68,3 +68,12 @@ async function sendMessage() {
   }
 
 }
+input.addEventListener("keypress", function(event) {
+
+  if (event.key === "Enter") {
+
+    sendMessage();
+
+  }
+
+});
