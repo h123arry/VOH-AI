@@ -51,9 +51,13 @@ async function sendMessage() {
 
     const data = await response.json();
 
-    typing.style.display = "none";
+    setTimeout(() => {
 
-    addMessage(data.reply, "ai");
+  typing.style.display = "none";
+
+  addMessage(data.reply, "ai");
+
+}, 1500);
 
   } catch (error) {
 
