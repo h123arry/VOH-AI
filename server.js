@@ -22,16 +22,45 @@ app.post("/chat", async (req, res) => {
 
     const userMessage = req.body.message;
 
-    // Detect name
-    if (
-      userMessage.toLowerCase().includes("my name is")
-    ) {
+    const lowerMessage =
+      userMessage.toLowerCase();
+
+    // Save user's name
+    if (lowerMessage.includes("my name is")) {
 
       const name =
-        userMessage.split("my name is")[1]?.trim();
+        userMessage.substring(
+          lowerMessage.indexOf("my name is") + 10
+        ).trim();
 
       if (name) {
-        memory.name = name;
+
+        memory.name =
+          name.replace(/[^\w\s]/gi, "");
+
+      }
+
+    }
+
+    // Recall user's name
+    if (
+      lowerMessage.includes("what's my name") ||
+      lowerMessage.includes("what is my name")
+    ) {
+
+      if (memory.name) {
+
+        return res.json({
+          reply: `Your name is ${memory.name} 😄`
+        });
+
+      } else {
+
+        return res.json({
+          reply:
+            "You haven't told me your name yet 😅"
+        });
+
       }
 
     }
