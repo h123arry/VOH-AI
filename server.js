@@ -10,6 +10,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
+const memory = {};
+
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
@@ -19,6 +21,29 @@ app.post("/chat", async (req, res) => {
   try {
 
     const userMessage = req.body.message;
+
+    // Detect name
+    if (
+      userMessage.toLowerCase().includes("my name is")
+    ) {
+
+      const name =
+        userMessage.split("my name is")[1]?.trim();
+
+      if (name) {
+        memory.name = name;
+      }
+
+    }
+
+    let memoryPrompt = "";
+
+    if (memory.name) {
+
+      memoryPrompt =
+        `The user's name is ${memory.name}. Remember it and use it naturally sometimes.`;
+
+    }
 
     const response = await axios.post(
 
@@ -33,7 +58,7 @@ app.post("/chat", async (req, res) => {
             role: "system",
 
             content:
-              "You are VOH AI, a smart, modern and friendly AI assistant created by VOICEOFHARRISON. You speak in a cool, conversational and confident way. Keep responses engaging, natural and human-like. Avoid sounding robotic or too formal. You can use emojis naturally sometimes."
+              `You are VOH AI, a smart, modern and friendly AI assistant created by VOICEOFHARRISON. You speak in a cool, conversational and confident way. Keep responses engaging, natural and human-like. Avoid sounding robotic or too formal. You can use emojis naturally sometimes. ${memoryPrompt}`
           },
 
           {
@@ -47,7 +72,8 @@ app.post("/chat", async (req, res) => {
       {
         headers: {
 
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Authorization":
+            `Bearer ${process.env.OPENROUTER_API_KEY}`,
 
           "Content-Type": "application/json",
 
@@ -69,7 +95,9 @@ app.post("/chat", async (req, res) => {
 
   } catch (error) {
 
-    console.log(error.response?.data || error.message);
+    console.log(
+      error.response?.data || error.message
+    );
 
     res.json({
       reply: "Something went wrong 😕"
