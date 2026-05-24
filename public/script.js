@@ -1,24 +1,47 @@
-const chatBox = document.getElementById("chat-box");
-const input = document.getElementById("message");
-const typing = document.getElementById("typing");
+const chatBox =
+  document.getElementById("chat-box");
 
-// Load saved chats
+const input =
+  document.getElementById("message");
+
+const typing =
+  document.getElementById("typing");
+
+const sendButton =
+  document.querySelector(
+    '.input-area button:last-child'
+  );
+
+let isSending = false;
+
+// Auto focus input
 window.onload = () => {
+
+  input.focus();
 
   const savedChats =
     localStorage.getItem("voh_chats");
 
   if (savedChats) {
 
-    chatBox.innerHTML = savedChats;
+    chatBox.innerHTML =
+      savedChats;
 
     chatBox.scrollTop =
       chatBox.scrollHeight;
+
+  } else {
+
+    addMessage(
+      "Hey 👋 I'm VOH AI, your smart assistant. How can I help you today?",
+      "ai"
+    );
 
   }
 
 };
 
+// Save chats
 function saveChats() {
 
   localStorage.setItem(
@@ -28,26 +51,39 @@ function saveChats() {
 
 }
 
-function addMessage(message, sender) {
+// Add messages
+function addMessage(
+  message,
+  sender
+) {
 
   const msgDiv =
     document.createElement("div");
 
-  msgDiv.classList.add("message");
+  msgDiv.classList.add(
+    "message"
+  );
 
   if (sender === "user") {
 
-    msgDiv.classList.add("user");
+    msgDiv.classList.add(
+      "user"
+    );
 
   } else {
 
-    msgDiv.classList.add("ai");
+    msgDiv.classList.add(
+      "ai"
+    );
 
   }
 
-  msgDiv.innerText = message;
+  msgDiv.innerText =
+    message;
 
-  chatBox.appendChild(msgDiv);
+  chatBox.appendChild(
+    msgDiv
+  );
 
   chatBox.scrollTop =
     chatBox.scrollHeight;
@@ -56,23 +92,49 @@ function addMessage(message, sender) {
 
 }
 
+// Disable send button
+function setLoading(
+  loading
+) {
+
+  isSending = loading;
+
+  sendButton.disabled =
+    loading;
+
+  sendButton.innerText =
+    loading
+      ? "..."
+      : "Send";
+
+}
+
+// Send message
 async function sendMessage() {
 
-  const message = input.value.trim();
+  if (isSending) return;
+
+  const message =
+    input.value.trim();
 
   if (!message) return;
 
-  addMessage(message, "user");
+  addMessage(
+    message,
+    "user"
+  );
 
   input.value = "";
 
-  typing.style.display = "block";
+  typing.style.display =
+    "block";
+
+  setLoading(true);
 
   try {
 
-    const response = await fetch(
-      "/chat",
-      {
+    const response =
+      await fetch("/chat", {
 
         method: "POST",
 
@@ -81,41 +143,66 @@ async function sendMessage() {
             "application/json"
         },
 
-        body: JSON.stringify({
-          message: message
-        })
+        body:
+          JSON.stringify({
+            message:
+              message
+          })
 
-      }
-    );
+      });
 
-    const data = await response.json();
+    const data =
+      await response.json();
+
+    const delay =
+      Math.min(
+        3000,
+        Math.max(
+          1000,
+          data.reply.length *
+            15
+        )
+      );
 
     setTimeout(() => {
 
-      typing.style.display = "none";
+      typing.style.display =
+        "none";
 
-      addMessage(data.reply, "ai");
+      addMessage(
+        data.reply,
+        "ai"
+      );
 
-    }, 1500);
+      setLoading(false);
+
+    }, delay);
 
   } catch (error) {
 
-    typing.style.display = "none";
+    typing.style.display =
+      "none";
 
     addMessage(
-      "Error getting response.",
+      "Something went wrong 😕",
       "ai"
     );
+
+    setLoading(false);
 
   }
 
 }
 
+// Enter key support
 input.addEventListener(
   "keypress",
   function(event) {
 
-    if (event.key === "Enter") {
+    if (
+      event.key ===
+      "Enter"
+    ) {
 
       sendMessage();
 
@@ -123,59 +210,95 @@ input.addEventListener(
 
   }
 );
+
+// Clear chats
 function clearChat() {
 
-  localStorage.removeItem("voh_chats");
+  localStorage.removeItem(
+    "voh_chats"
+  );
 
-  chatBox.innerHTML = "";
+  chatBox.innerHTML =
+    "";
+
+  addMessage(
+    "Chat cleared 🧹",
+    "ai"
+  );
 
 }
+
+// Voice input
 function startVoice() {
 
+  if (
+    !(
+      "webkitSpeechRecognition"
+      in window
+    )
+  ) {
+
+    alert(
+      "Voice recognition is not supported on this browser."
+    );
+
+    return;
+
+  }
+
   const recognition =
     new webkitSpeechRecognition();
 
-  recognition.lang = "en-US";
+  recognition.lang =
+    "en-US";
 
-  recognition.onresult = function(event) {
+  recognition.interimResults =
+    false;
 
-    const transcript =
-      event.results[0][0].transcript;
+  input.placeholder =
+    "🎤 Listening...";
 
-    function startVoice() {
+  recognition.onstart =
+    function() {
 
-  const recognition =
-    new webkitSpeechRecognition();
+      navigator.vibrate?.(
+        100
+      );
 
-  recognition.lang = "en-US";
+    };
 
-  input.placeholder = "🎤 Listening...";
+  recognition.onresult =
+    function(event) {
 
-  recognition.onresult = function(event) {
+      const transcript =
+        event.results[0][0]
+          .transcript;
 
-    const transcript =
-      event.results[0][0].transcript;
+      input.value =
+        transcript;
 
-    input.value = transcript;
+      input.placeholder =
+        "Ask VOH AI anything...";
 
-    input.placeholder =
-      "Ask VOH AI anything...";
+      input.focus();
 
-  };
+    };
 
-  recognition.onerror = function() {
+  recognition.onerror =
+    function() {
 
-    input.placeholder =
-      "Ask VOH AI anything...";
+      input.placeholder =
+        "Ask VOH AI anything...";
 
-  };
+    };
 
-  recognition.onend = function() {
+  recognition.onend =
+    function() {
 
-    input.placeholder =
-      "Ask VOH AI anything...";
+      input.placeholder =
+        "Ask VOH AI anything...";
 
-  };
+    };
 
   recognition.start();
 
