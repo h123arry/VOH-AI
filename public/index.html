@@ -1,38 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>VOH AI</title>
+
   <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <h1>VOH AI 🚀</h1>
+    <div class="top-bar">
 
-  <div id="chat-box"></div>
+      <h1>VOH AI 🚀</h1>
 
-  <div id="typing" class="typing">
-    VOH AI is typing...
+      <button
+        id="clear-btn"
+        onclick="clearChat()"
+      >
+        Clear Chat
+      </button>
+
+    </div>
+
+    <div id="chat-box"></div>
+
+    <div id="typing" class="typing">
+      VOH AI is typing
+    </div>
+
+    <div class="input-area">
+
+      <input
+        type="text"
+        id="message"
+        placeholder="Ask VOH AI anything..."
+        autocomplete="off"
+      >
+
+      <button onclick="sendMessage()">
+        Send
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="input-area">
-
-    <input
-      type="text"
-      id="message"
-      placeholder="Ask VOH AI anything..."
-    >
-
-    <button onclick="sendMessage()">
-      Send
-    </button>
-
-  </div>
-
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
+
 </html>

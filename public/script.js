@@ -123,3 +123,10 @@ input.addEventListener(
 
   }
 );
+function clearChat() {
+
+  localStorage.removeItem("voh_chats");
+
+  chatBox.innerHTML = "";
+
+}
