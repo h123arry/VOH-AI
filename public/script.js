@@ -130,3 +130,24 @@ function clearChat() {
   chatBox.innerHTML = "";
 
 }
+function startVoice() {
+
+  const recognition =
+    new webkitSpeechRecognition();
+
+  recognition.lang = "en-US";
+
+  recognition.onresult = function(event) {
+
+    const transcript =
+      event.results[0][0].transcript;
+
+    input.value = transcript;
+
+    sendMessage();
+
+  };
+
+  recognition.start();
+
+}
