@@ -142,9 +142,38 @@ function startVoice() {
     const transcript =
       event.results[0][0].transcript;
 
+    function startVoice() {
+
+  const recognition =
+    new webkitSpeechRecognition();
+
+  recognition.lang = "en-US";
+
+  input.placeholder = "🎤 Listening...";
+
+  recognition.onresult = function(event) {
+
+    const transcript =
+      event.results[0][0].transcript;
+
     input.value = transcript;
 
-    sendMessage();
+    input.placeholder =
+      "Ask VOH AI anything...";
+
+  };
+
+  recognition.onerror = function() {
+
+    input.placeholder =
+      "Ask VOH AI anything...";
+
+  };
+
+  recognition.onend = function() {
+
+    input.placeholder =
+      "Ask VOH AI anything...";
 
   };
 
