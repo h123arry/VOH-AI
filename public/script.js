@@ -8,13 +8,10 @@ const typing =
   document.getElementById("typing");
 
 const sendButton =
-  document.querySelector(
-    '.input-area button:last-child'
-  );
+  document.getElementById("send-btn");
 
 let isSending = false;
 
-// Auto focus input
 window.onload = () => {
 
   input.focus();
@@ -41,7 +38,6 @@ window.onload = () => {
 
 };
 
-// Save chats
 function saveChats() {
 
   localStorage.setItem(
@@ -51,7 +47,40 @@ function saveChats() {
 
 }
 
-// Add messages
+function getTime() {
+
+  return new Date()
+    .toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+}
+
+function copyMessage(button) {
+
+  const message =
+    button.parentElement
+      .querySelector(
+        ".text"
+      ).innerText;
+
+  navigator.clipboard.writeText(
+    message
+  );
+
+  button.innerText =
+    "Copied";
+
+  setTimeout(() => {
+
+    button.innerText =
+      "Copy";
+
+  }, 1000);
+
+}
+
 function addMessage(
   message,
   sender
@@ -64,22 +93,35 @@ function addMessage(
     "message"
   );
 
-  if (sender === "user") {
+  msgDiv.classList.add(sender);
 
-    msgDiv.classList.add(
-      "user"
-    );
+  const label =
+    sender === "user"
+      ? "You"
+      : "VOH AI";
 
-  } else {
+  msgDiv.innerHTML = `
 
-    msgDiv.classList.add(
-      "ai"
-    );
+    <div class="label">
+      ${label}
+    </div>
 
-  }
+    <div class="text">
+      ${message}
+    </div>
 
-  msgDiv.innerText =
-    message;
+    <div class="timestamp">
+      ${getTime()}
+    </div>
+
+    <button
+      class="copy-btn"
+      onclick="copyMessage(this)"
+    >
+      Copy
+    </button>
+
+  `;
 
   chatBox.appendChild(
     msgDiv
@@ -92,7 +134,6 @@ function addMessage(
 
 }
 
-// Disable send button
 function setLoading(
   loading
 ) {
@@ -109,7 +150,6 @@ function setLoading(
 
 }
 
-// Send message
 async function sendMessage() {
 
   if (isSending) return;
@@ -143,11 +183,9 @@ async function sendMessage() {
             "application/json"
         },
 
-        body:
-          JSON.stringify({
-            message:
-              message
-          })
+        body: JSON.stringify({
+          message: message
+        })
 
       });
 
@@ -194,7 +232,6 @@ async function sendMessage() {
 
 }
 
-// Enter key support
 input.addEventListener(
   "keypress",
   function(event) {
@@ -211,15 +248,13 @@ input.addEventListener(
   }
 );
 
-// Clear chats
 function clearChat() {
 
   localStorage.removeItem(
     "voh_chats"
   );
 
-  chatBox.innerHTML =
-    "";
+  chatBox.innerHTML = "";
 
   addMessage(
     "Chat cleared 🧹",
@@ -228,7 +263,6 @@ function clearChat() {
 
 }
 
-// Voice input
 function startVoice() {
 
   if (
@@ -251,9 +285,6 @@ function startVoice() {
 
   recognition.lang =
     "en-US";
-
-  recognition.interimResults =
-    false;
 
   input.placeholder =
     "🎤 Listening...";

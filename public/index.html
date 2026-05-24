@@ -22,7 +22,12 @@
 
     <div class="top-bar">
 
-      <h1>VOH AI 🚀</h1>
+      <div>
+        <h1>VOH AI 🚀</h1>
+        <p class="status">
+          🟢 Online
+        </p>
+      </div>
 
       <button
         id="clear-btn"
@@ -41,6 +46,13 @@
 
     <div class="input-area">
 
+      <button
+        class="voice-btn"
+        onclick="startVoice()"
+      >
+        🎤
+      </button>
+
       <input
         type="text"
         id="message"
@@ -48,13 +60,12 @@
         autocomplete="off"
       >
 
-      <button onclick="startVoice()">
-  🎤
-</button>
-
-<button onclick="sendMessage()">
-  Send
-</button>
+      <button
+        id="send-btn"
+        onclick="sendMessage()"
+      >
+        Send
+      </button>
 
     </div>
 
